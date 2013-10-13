@@ -1,0 +1,39 @@
+======================================================================
+3DProject
+======================================================================
+Compiling:
+
+	just run make.
+	(should work on linux and mac. Sorry Windows...)
+
+======================================================================
+What's it do?:
+	
+	Right now it's just a simple side scroller but I plan on adding a LOT more.
+
+	Things to add:
+	0. Health and stats
+	1. Attacks (not sure what kind yet...)
+	2. Enemies with which to attack
+	3. Enemy attacks
+	4. special jumps
+	5. jetpacks are fun...
+	6. A level editor instead of using text editor
+	7. Objectives
+	8. Story?...
+	9. Shaders and textures!
+
+	Sounds fun right?!
+
+	This was wrote using C++ libraries of Opengl and SDL
+
+======================================================================
+Controls:
+	
+	So far:
+	A and Left Arrow: move Left
+	D and Right Arrow: move Right
+	SpaceBar: Jumps
+
+
+======================================================================
