@@ -2,11 +2,11 @@ UNAME := $(shell uname -s)
 
 
 ifeq ($(UNAME), Linux)
-	REST = -lGL -lGLU
+	REST = -I/usr/include/freetype2 -lGL -lGLU
 endif
 
 ifeq ($(UNAME), Darwin)
-	REST = -framework OpenGL
+	REST = -I/usr/local/include/freetype2 -framework OpenGL
 endif
 
 all:

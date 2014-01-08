@@ -4,9 +4,7 @@
 
 Character::Character()
 {
-    Xpos = 5, Ypos = 5.1000;
-    Xsize = 1, Ysize = 1;
-    Xspeed = .1, Yspeed = -.1;
+   
 }
 
 

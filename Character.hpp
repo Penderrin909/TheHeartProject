@@ -15,6 +15,8 @@ public:
     double Xpos, Ypos;
     double Xsize, Ysize, Xspeed, Yspeed;
     
+    int health;
+    
 };
 
 

@@ -19,8 +19,8 @@ public:
     
     void setXCamMAX(int val);
     void setYCamMAX(int val);
-    double getXCamPos(double playerX);
-    double getYCamPos(double playerY);
+    void getXCamPos(double playerX);
+    void getYCamPos(double playerY);
     
 private:
     

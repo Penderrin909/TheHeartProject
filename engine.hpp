@@ -3,7 +3,7 @@
 
 
 #ifdef __linux__
-*#include <GL/gl.h>
+#include <GL/gl.h>
 #include <GL/glu.h>
 #elif __APPLE__
 #include <OpenGL/GL.h> //MAC OS STUFF
@@ -11,11 +11,15 @@
 #endif
 
 
+#include <SDL/SDL.h>
+#include <SDL/SDL_opengl.h>
 
 #include <cmath>
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_opengl.h>
+/*#include <SDL/SDL.h>
+#include <SDL/SDL_opengl.h>*/
+
+//#include <FTGL/ftgl.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,7 +39,7 @@ using std::ifstream;
 
 const int screenSize[2] = {640, 480};
 const float pi = 3.14159265359;
-const int MAXfps = 20;
+const int MAXfps = 35;
 
 class engine
 {
@@ -55,6 +59,8 @@ public:
     
     void move(Character &);
     void collisionDetect(Character &);
+    
+    void checkFrames();
     
     Player player;
     Camera Cam;
@@ -76,6 +82,9 @@ private:
     int xMAX, yMAX;
     vector<vector <int> > mapV;
     vector<vector <int> > mapVCorrect;
+    
+    //Frame check
+    int delayTime,nextA, nextB;
     
 };
 

@@ -9,6 +9,9 @@ class Player: public Character
 {
 public:
     
+    Player();
+    ~Player();
+    
     void getStartPos(double x, double y);
     
 };

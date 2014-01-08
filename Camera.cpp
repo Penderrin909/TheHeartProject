@@ -3,7 +3,8 @@
 
 Camera::Camera()
 {
-    
+    XCamPos = 5.5;
+    YCamPos = 4.5;
 }
 
 //get max x value for the current map
@@ -22,11 +23,14 @@ void Camera::setYCamMAX(int val)
 // return playerX if player is not half a screen away
 // from the left most or right most side
 // if he is return the last value that he was
-double Camera::getXCamPos(double playerX)
+void Camera::getXCamPos(double playerX)
 {
-    if((playerX+5.5)>=XCamMAX)
+    if(((playerX+5.5)>=XCamMAX)&&((playerX-5.5)<=0))
     {
-        
+        XCamPos = playerX;
+    }
+    else if((playerX+5.5)>=XCamMAX)
+    {
     }
     else if((playerX-5.5)<=0)
     {
@@ -39,9 +43,13 @@ double Camera::getXCamPos(double playerX)
 }
 
 //X and y are dealt with the same way.
-double Camera::getYCamPos(double playerY)
+void Camera::getYCamPos(double playerY)
 {
-    if((playerY+5.5)>=YCamMAX)
+    if(((playerY+5.5)>=YCamMAX)&&((playerY-4.5)<=0))
+    {
+        XCamPos = playerY;
+    }
+    else if((playerY+5.5)>=YCamMAX)
     {
         
     }

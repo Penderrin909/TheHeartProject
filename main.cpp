@@ -13,6 +13,8 @@ int main(int argv, char* argc[])
         engine1.event();
         
         engine1.render();
+        
+        engine1.checkFrames();
     }
     
     return 0;

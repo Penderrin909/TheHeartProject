@@ -28,18 +28,25 @@ void engine::init()
     
     getNewMap();
     
-    for(int i = 0; i<xMAX; i++)
+    for(int j = 0; j<xMAX; j++)
     {
-        for(int j = 0; j<yMAX; j++)
+        for(int i = 0; i<yMAX; i++)
         {
-            if(mapVCorrect[i][j]==2)
+            if(mapVCorrect[i][j]== 2)
             {
                 playerStartX = j;
                 playerStartY = i;
                 player.getStartPos(playerStartX,playerStartY);
+                
+                Cam.getXCamPos(player.Xpos);
+                Cam.getYCamPos(player.Ypos);
+                
+                //std::cout<<Cam.XCamPos<<" "<<Cam.YCamPos<<"\n"<<player.Xpos<<" "<<player.Ypos<<"\n";
             }
         }
     }
+    
+    delayTime = 0, nextA = 0, nextB = 0;
 }
 
 void engine::getNewMap()
@@ -54,6 +61,9 @@ void engine::getNewMap()
 
 void engine::render()
 {
+    //get Camera positions
+    
+    
     //clears the screen's color and depth (default is black but can change with glClearColor(...))
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     //drawing to an area starting at the bottom left, 640 wide, 480 high.
@@ -71,7 +81,8 @@ void engine::render()
     glLoadIdentity();
     //multiply opengls modelview matrix with a transform matric that simulates a camera at (0,0,-1) looking towards the location (0,0,0) with up defined to be (0,1,0)
     //gluLookAt(Cam.XCamPos, Cam.YCamPos, 10,Cam.XCamPos, Cam.YCamPos, 0, 0, 1, 0);
-    gluLookAt(playerStartX, playerStartY, 10,Cam.XCamPos, Cam.YCamPos, 0, 0, 1, 0);
+    //gluLookAt(Cam.XCamPos, Cam.YCamPos, 10,Cam.XCamPos, Cam.YCamPos, 0, 0, 1, 0); //DEFAULT
+    gluLookAt(0, 5, 10,Cam.XCamPos, Cam.YCamPos, 0, 0, 1, 0);
     //x,y,z
     
     
@@ -310,6 +321,22 @@ void engine::drawPlayer()
     glVertex3f(0.0f,0.0f,0.0f); glVertex3f(0.0f,0.0,1.0);
     glColor3f(0.0f,1.0f,0.0f);
     glEnd();*/
+    
+}
+
+void engine::checkFrames()
+{
+    //nextA, nextB to track FPS
+    nextB = SDL_GetTicks();
+    if((nextB-nextA) < ((1/float(MAXfps))*1000))
+    {
+        //std::cout<<nextB-nextA<<"\n";
+        SDL_Delay(((1/float(MAXfps))*1000)-(nextB-nextA));
+    }
+    nextA = nextB;
+    
+    
+    //std::cout<<player.Yspeed<<"\n";
 }
 
 void engine::quit()
