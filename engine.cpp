@@ -4,6 +4,7 @@
 engine::engine()
 {
     Surf_Display = NULL;
+    textSurf = NULL;
     running = true;
 }
 
@@ -47,6 +48,11 @@ void engine::init()
     }
     
     delayTime = 0, nextA = 0, nextB = 0;
+    
+    loadTexture("tex1.jpg", firstBlock);
+    loadTexture("tex2.png", playerTex);
+    
+    SDL_FreeSurface(textSurf);
 }
 
 void engine::getNewMap()
@@ -81,11 +87,13 @@ void engine::render()
     glLoadIdentity();
     //multiply opengls modelview matrix with a transform matric that simulates a camera at (0,0,-1) looking towards the location (0,0,0) with up defined to be (0,1,0)
     //gluLookAt(Cam.XCamPos, Cam.YCamPos, 10,Cam.XCamPos, Cam.YCamPos, 0, 0, 1, 0);
-    //gluLookAt(Cam.XCamPos, Cam.YCamPos, 10,Cam.XCamPos, Cam.YCamPos, 0, 0, 1, 0); //DEFAULT
-    gluLookAt(0, 5, 10,Cam.XCamPos, Cam.YCamPos, 0, 0, 1, 0);
+    gluLookAt(Cam.XCamPos, Cam.YCamPos, 10,Cam.XCamPos, Cam.YCamPos, 0, 0, 1, 0); //DEFAULT
+    //gluLookAt(0, 5, 10,Cam.XCamPos, Cam.YCamPos, 0, 0, 1, 0);
     //x,y,z
     
-    
+    //load texture for boxes..
+    glBindTexture(GL_TEXTURE_2D, firstBlock); //select which texture
+    glEnable(GL_TEXTURE_2D); //tell opengl to use the texture
     for(int i = 0; i<yMAX; i++)
     {
         for(int j = 0; j<xMAX; j++)
@@ -97,11 +105,17 @@ void engine::render()
         }
     }
     
+    glDisable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, playerTex);
+    glEnable(GL_TEXTURE_2D);
+    
     
     glTranslatef(player.Xpos,player.Ypos,0);
     
     // DRAW PLAYER
     drawPlayer();
+    
+    glDisable(GL_TEXTURE_2D);
     
     //double buffered
     SDL_GL_SwapBuffers();
@@ -111,10 +125,8 @@ void engine::render()
 void engine::event()
 {//SDL_WM_GrabInput
     
-    //Check collisions of player and more objects if needed
-    collisionDetect(player);
+    SDL_PumpEvents();
     
-       SDL_PumpEvents();
     Uint8 *keyboard_state = SDL_GetKeyState(NULL);
     //SDL_GetMouseState(&Xpos,&Ypos);
     //SDL_GetRelativeMouseState(&xrel,&yrel);
@@ -124,15 +136,20 @@ void engine::event()
         running = false;
     }
     
-    if(keyboard_state[SDLK_d]||keyboard_state[SDLK_RIGHT])
+    if((keyboard_state[SDLK_d]||keyboard_state[SDLK_RIGHT]))
     {
-        player.Xspeed = .1;
+        player.Xspeed = .5; //player.Xspeed = .1
     }
-    else if(keyboard_state[SDLK_a]||keyboard_state[SDLK_LEFT])
+    else if((keyboard_state[SDLK_a]||keyboard_state[SDLK_LEFT]))
     {
-        player.Xspeed = -.1;
+        player.Xspeed = -.5;
     }
     else player.Xspeed = 0;
+    
+    
+    collisionDetect(player);
+    
+    //Check collisions of player and more objects if needed
     
     /*
     if(keyboard_state[SDLK_w]||keyboard_state[SDLK_UP])
@@ -148,7 +165,7 @@ void engine::event()
     
     if(keyboard_state[SDLK_SPACE]&&(player.Yspeed == 0)) //Gravity for player
     {
-        jumpA = .250;
+        jumpA = .25;
     }
     else
     {
@@ -239,13 +256,25 @@ void engine::readMap(string mapFile) // takes the map file and reads it into the
 //draws a cube starting from the upper left hand corner
 void engine::drawSquare(float startx, float starty)
 {
-    glBegin(GL_LINE_LOOP);
+    glBegin(GL_POLYGON);
+    //glColor3f(1.0f,1.0f,1.0f); // red + green + blue
+    glTexCoord2f(1.0f,1.0f);
+    glVertex3f(startx,starty,0.0f);
+    glTexCoord2f(1.0f,0.0f);
+    glVertex3f(startx+1,starty,0.0f);
+    glTexCoord2f(0.0f,0.0f);
+    glVertex3f(startx+1,starty-1,0.0f);
+    glTexCoord2f(1.0f,0.0f);
+    glVertex3f(startx,starty-1,0.0f);
+    glEnd();
+
+    /*glBegin(GL_LINE_LOOP);
     glColor3f(1.0f,1.0f,1.0f); // red + green + blue
     glVertex3f(startx,starty,0.0f);
     glVertex3f(startx+1,starty,0.0f);
     glVertex3f(startx+1,starty-1,0.0f);
     glVertex3f(startx,starty-1,0.0f);
-    glEnd();
+    glEnd();*/
 }
 
 void engine::collisionDetect(Character &player)
@@ -253,39 +282,40 @@ void engine::collisionDetect(Character &player)
     
     
     //std::cout<<player.Yspeed<<"\n";
-    //check in negative X direction on actor
-    if((player.Xspeed < 0)&&((mapVCorrect[(int)(player.Ypos+1.001)][(int)(player.Xpos-.099)] >= 10)||(mapVCorrect[(int)(player.Ypos+2.001)][(int)(player.Xpos-.099)] >= 10))) //add .001 to help with bad truncation
-    {
-        player.Xpos -= player.Xspeed;
-        player.Xspeed = 0;
-    }
-    //else std::cout<<"GOOOOOOOOOOD\n";
+    //check in negative X direction on player
+    if((player.Xspeed < 0)&&((mapVCorrect[(int)(trunc(player.Ypos+1))][(int)(trunc(player.Xpos-.01))] >= 10)||(mapVCorrect[(int)(trunc(player.Ypos+2))][(int)(trunc(player.Xpos-.01))] >= 10))) //add .001 to help with bad truncation
+     {
+         player.Xpos -= player.Xspeed;
+     }
     
     //check in positive X direction on player
-    if((player.Xspeed > 0)&&((mapVCorrect[(int)(player.Ypos+1.001)][(int)(player.Xpos+1.001)] >= 10)||(mapVCorrect[(int)(player.Ypos+2.001)][(int)(player.Xpos+1.001)] >= 10))) //add .001 to help with bad truncation
-    {
-        player.Xpos -= player.Xspeed;
-        player.Xspeed = 0;
-    }
+     if((player.Xspeed > 0)&&((mapVCorrect[(int)(trunc(player.Ypos+1))][(int)trunc((player.Xpos+1.01))] >= 10)||(mapVCorrect[(int)(trunc(player.Ypos+2))][(int)trunc((player.Xpos+1.01))] >= 10))) //add .001 to help with bad truncation
+     {
+         player.Xpos -= player.Xspeed;
+         
+     }
     
     //check in negative Y direction of player
-    if((player.Yspeed < 0)&&((mapVCorrect[(int)(player.Ypos+.999+(player.Yspeed))][(int)(player.Xpos+.001)] >= 10)||(mapVCorrect[(int)(player.Ypos+.999+(player.Yspeed))][(int)(player.Xpos+.999)] >= 10))) //add .001 to help with bad truncation
+    if((player.Yspeed < 0)&&((mapVCorrect[(int)(trunc(player.Ypos+.999+player.Yspeed))][(int)(trunc(player.Xpos+.001))] >= 10)||(mapVCorrect[(int)(trunc(player.Ypos+.999+player.Yspeed))][(int)(trunc(player.Xpos+.999))] >= 10))) //add .001 to help with bad truncation
     {
-            player.Yspeed -= player.Yspeed;
+        player.Yspeed -= player.Yspeed;
     }
     
-    if((player.Yspeed > 0)&&((mapVCorrect[(int)(player.Ypos+2.001)][(int)(player.Xpos+.001)] >= 10)||(mapVCorrect[(int)(player.Ypos+2.001)][(int)(player.Xpos+.999)] >= 10))) //add .001 to help with bad truncation //1.001
+    //check in Y positive direction
+    if((player.Yspeed > 0)&&((mapVCorrect[(int)(trunc(player.Ypos+2))][(int)(trunc(player.Xpos+.001))] >= 10)||(mapVCorrect[(int)(trunc(player.Ypos+2))][(int)(trunc(player.Xpos+.999))] >= 10))) //add .001 to help with bad truncation //1.001
     {
         player.Ypos -= player.Yspeed;
         player.Yspeed = -.001;
         jumpA = 0;
     }
     
+    
     //std::cout<<"___"<<player.Yspeed<<"____\n";
-    //std::cout<<" X: "<<(int)player.Xpos+1.0<<" Y: "<<(int)(player.Ypos)<<"\n";
+    //std::cout<<" X: "<<trunc(player.Xpos+0.0)<<" Y: "<<trunc(player.Ypos+1.0)<<" MapV: "<<mapVCorrect[(int)(trunc(player.Ypos+1))][(int)trunc((player.Xpos))]<<"\n";
     //std::cout<<" Xreal: "<<(player.Xpos)<<" Yreal: "<<(player.Ypos)<<"\n";
     
 }
+
 
 //moves objects about the origin
 void engine::move(Character &player)
@@ -303,6 +333,19 @@ void engine::drawPlayer()
 {
     glTranslatef(0,0,0);
     
+    glBegin(GL_POLYGON);
+    //glColor3f(1.0f,0.0f,1.0f); // red + green + blue
+    glTexCoord2f(1.0f,1.0f); // (1,1)
+    glVertex3f(0.0f,0.0f,0.0f);
+    glTexCoord2f(0.0f,1.0f); // (0,1)
+    glVertex3f(1.0f,0.0f,0.0f);
+    glTexCoord2f(0.0f,0.0f); // (0,0)
+    glVertex3f(1.0f,1.0f,0.0f);
+    glTexCoord2f(1.0f,0.0f); // (1,0)
+    glVertex3f(0.0f,1.0f,0.0f);
+    glEnd();
+    
+    /*
     glBegin(GL_LINE_LOOP);
     glColor3f(1.0f,0.0f,1.0f); // red + green + blue
     glVertex3f(0.0,0.0,0.0f);
@@ -310,17 +353,29 @@ void engine::drawPlayer()
     glVertex3f(1.0,1.0,0.0f);
     glVertex3f(0.0,1.0,0.0f);
     glEnd();
+    */
     
-    /*
-    glBegin(GL_LINES);
-    glColor3f(1.0f,0.0f,0.0f); // red
-    glVertex3f(0.0f,0.0f,0.0f); glVertex3f(1.0f,0.0,0.0);
-    glColor3f(0.0f,1.0f,0.0f); // green
-    glVertex3f(0.0f,0.0f,0.0f); glVertex3f(0.0f,1.0,0.0);
-    glColor3f(0.0f,0.0f,1.0f); // blue
-    glVertex3f(0.0f,0.0f,0.0f); glVertex3f(0.0f,0.0,1.0);
-    glColor3f(0.0f,1.0f,0.0f);
-    glEnd();*/
+}
+
+void engine::loadTexture(const string textureName, GLuint &texN)
+{
+    string image = "textures/"+textureName;
+    
+    std::cout<<image<<"\n";
+    
+    textSurf = IMG_Load(image.c_str());
+    if(textSurf==NULL)
+	{
+        std::cout<<"Error: no "<<textureName<<" found!\n";
+		running = false;
+	}
+    
+    glGenTextures(1,&texN);
+    glBindTexture(GL_TEXTURE_2D, texN);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textSurf->w, textSurf->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, textSurf->pixels);
+    
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     
 }
 

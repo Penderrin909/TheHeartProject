@@ -13,6 +13,7 @@
 
 #include <SDL/SDL.h>
 #include <SDL/SDL_opengl.h>
+#include <SDL/SDL_image.h>
 
 #include <cmath>
 
@@ -56,6 +57,7 @@ public:
     void readMap(string mapFile);
     void drawSquare(float startx, float starty);
     void drawPlayer();
+    void loadTexture(const string textureName,GLuint &texN);
     
     void move(Character &);
     void collisionDetect(Character &);
@@ -65,6 +67,7 @@ public:
     Player player;
     Camera Cam;
     
+    SDL_Surface *textSurf;
     SDL_Surface *Surf_Display;
     bool running;
     
@@ -85,6 +88,10 @@ private:
     
     //Frame check
     int delayTime,nextA, nextB;
+    
+    //textures
+    GLuint firstBlock;
+    GLuint playerTex;
     
 };
 
