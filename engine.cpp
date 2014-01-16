@@ -49,7 +49,7 @@ void engine::init()
     
     delayTime = 0, nextA = 0, nextB = 0;
     
-    loadTexture("tex1.jpg", firstBlock);
+    loadTexture("tex1.png", firstBlock);
     loadTexture("tex2.png", playerTex);
     
     SDL_FreeSurface(textSurf);
