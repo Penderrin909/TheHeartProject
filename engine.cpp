@@ -138,11 +138,11 @@ void engine::event()
     
     if((keyboard_state[SDLK_d]||keyboard_state[SDLK_RIGHT]))
     {
-        player.Xspeed = .5; //player.Xspeed = .1
+        player.Xspeed = .1; //player.Xspeed = .1
     }
     else if((keyboard_state[SDLK_a]||keyboard_state[SDLK_LEFT]))
     {
-        player.Xspeed = -.5;
+        player.Xspeed = -.1;
     }
     else player.Xspeed = 0;
     
