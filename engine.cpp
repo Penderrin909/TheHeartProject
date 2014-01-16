@@ -49,8 +49,9 @@ void engine::init()
     
     delayTime = 0, nextA = 0, nextB = 0;
     
-    loadTexture("tex1.png", firstBlock);
-    loadTexture("tex2.png", playerTex);
+    loadTexture("tex1_alt.png", firstBlock);
+    loadTexture("tex2_right.png", player.texMoveRight);
+    loadTexture("tex2_left.png", player.texMoveLeft);
     
     SDL_FreeSurface(textSurf);
 }
@@ -106,7 +107,9 @@ void engine::render()
     }
     
     glDisable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, playerTex);
+    
+    determineLeftOrRight(player);
+    
     glEnable(GL_TEXTURE_2D);
     
     
@@ -120,6 +123,27 @@ void engine::render()
     //double buffered
     SDL_GL_SwapBuffers();
     
+}
+
+void engine::determineLeftOrRight(Character &mover)
+{
+    if(mover.Xspeed > 0)
+    {
+        mover.right = true;
+        mover.lastRight = true;
+        glBindTexture(GL_TEXTURE_2D, player.texMoveRight);
+    }
+    else if(mover.Xspeed < 0)
+    {
+        mover.right = false;
+        mover.lastRight = false;
+        glBindTexture(GL_TEXTURE_2D, player.texMoveLeft);
+    }
+    else if(mover.Xspeed == 0)
+    {
+        if(mover.lastRight == true) glBindTexture(GL_TEXTURE_2D, player.texMoveRight);
+        else if(mover.lastRight == false) glBindTexture(GL_TEXTURE_2D, player.texMoveLeft);
+    }
 }
 
 void engine::event()

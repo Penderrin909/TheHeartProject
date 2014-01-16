@@ -4,7 +4,8 @@
 
 Character::Character()
 {
-   
+    lastRight = true;
+    right = true;
 }
 
 

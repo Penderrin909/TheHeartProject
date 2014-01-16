@@ -1,7 +1,7 @@
 #ifndef ENGINE_HPP
 #define ENGINE_HPP
 
-
+/*
 #ifdef __linux__
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -9,7 +9,7 @@
 #include <OpenGL/GL.h> //MAC OS STUFF
 #include <OpenGL/GLU.h>
 #endif
-
+*/
 
 #include <SDL/SDL.h>
 #include <SDL/SDL_opengl.h>
@@ -61,6 +61,7 @@ public:
     
     void move(Character &);
     void collisionDetect(Character &);
+    void determineLeftOrRight(Character &mover);
     
     void checkFrames();
     
@@ -91,8 +92,6 @@ private:
     
     //textures
     GLuint firstBlock;
-    GLuint playerTex;
-    
 };
 
 
