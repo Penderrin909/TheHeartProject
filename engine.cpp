@@ -20,6 +20,8 @@ void engine::init()
     Surf_Display = SDL_SetVideoMode( screenSize[0], screenSize[1], 32, SDL_OPENGL );
     
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
     //angleX = 0.0, angleY = 0.0;
     //Gy = 1.0f;
@@ -59,7 +61,7 @@ void engine::init()
 void engine::getNewMap()
 {
     //read in value for 1st map
-    readMap("maps/1.map");
+    readMap("maps/3.map");
     
     //get MAX x and y coordinate of map file
     Cam.setXCamMAX(xMAX);
@@ -396,7 +398,7 @@ void engine::loadTexture(const string textureName, GLuint &texN)
     
     glGenTextures(1,&texN);
     glBindTexture(GL_TEXTURE_2D, texN);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textSurf->w, textSurf->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, textSurf->pixels);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textSurf->w, textSurf->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, textSurf->pixels);
     
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
